@@ -1,6 +1,12 @@
 import axios from 'axios';
 import { apiClient } from './axios-config';
 
+declare const process: {
+  env: {
+    EXPO_PUBLIC_API_URL?: string;
+  };
+};
+
 const baseURL = process.env.EXPO_PUBLIC_API_URL;
 
 export interface AuthResponse {

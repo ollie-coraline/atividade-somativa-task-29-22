@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { getSessionToken } from './storage';
 
-const baseURL = process.env.EXPO_PUBLIC_API_URL;
+const baseURL = (globalThis as any).process?.env?.EXPO_PUBLIC_API_URL;
 
 /**
  * Cria uma instância de Axios com configurações de autenticação

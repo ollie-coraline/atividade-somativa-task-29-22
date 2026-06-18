@@ -1,45 +1,48 @@
 import React, { useMemo } from 'react';
 import { SectionList, StyleSheet, View, Text } from 'react-native';
 import TaskItem from './TaskItem';
-import { TaskItem as TaskType } from '../utils/handle-api';
+import { useTaskStore, Task } from '../store/useTaskStore';
 
-// TODO (Zustand): Remova as props tasks, onUpdate e onDelete daqui, elas não serão mais necessárias
 interface TaskListProps {
-  tasks: TaskType[];
-  onUpdate: (task: TaskType) => void;
-  onDelete: (id: string) => void;
+  tasks?: Task[];
+  filter?: 'all' | 'completed' | 'pending';
+  onUpdate: (task: Task) => void;
+  onDelete?: (id: string) => void;
 }
 
-// TODO (Zustand): Importe o useTaskStore e pegue as tasks diretamente da store
-const TaskList: React.FC<TaskListProps> = ({ tasks, onUpdate, onDelete }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks: tasksProp, filter = 'all', onUpdate, onDelete }) => {
+  const storeTasks = useTaskStore((state) => state.tasks);
+  const tasks = tasksProp ?? storeTasks;
+
   const sections = useMemo(() => {
-    const completedTasks = tasks.filter((task) => task.completed);
-    const pendingTasks = tasks.filter((task) => !task.completed);
+    const filteredTasks = tasks.filter((task) => {
+      if (filter === 'completed') return task.completed;
+      if (filter === 'pending') return !task.completed;
+      return true;
+    });
+
+    const completedTasks = filteredTasks.filter((task) => task.completed);
+    const pendingTasks = filteredTasks.filter((task) => !task.completed);
 
     return [
       { title: '✅ Concluídas', data: completedTasks },
       { title: '📋 Pendentes', data: pendingTasks },
     ];
-  }, [tasks]);
+  }, [tasks, filter]);
 
   return (
     <View style={styles.listContainer}>
       <SectionList
         sections={sections}
-        keyExtractor={(item) => item._id}
+        keyExtractor={(item) => String(item._id)}
         contentContainerStyle={styles.listContent}
         renderSectionHeader={({ section: { title } }) => (
           <Text style={styles.sectionHeader}>{title}</Text>
         )}
         renderItem={({ item }) => (
-          
-          <TaskItem
-            task={item}
-            updateMode={() => onUpdate(item)}
-            deleteTask={() => onDelete(item._id)}
-          />
+          <TaskItem task={item} updateMode={() => onUpdate(item)} onDelete={onDelete ? () => onDelete(String(item._id)) : undefined} />
         )}
-        renderSectionFooter={({ section }) => 
+        renderSectionFooter={({ section }) =>
           section.data.length === 0 ? (
             <Text style={styles.emptySectionText}>Nenhuma tarefa nesta categoria.</Text>
           ) : null

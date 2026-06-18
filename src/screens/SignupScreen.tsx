@@ -47,7 +47,7 @@ export default function SignupScreen({ onNavigateToLogin, onSignupSuccess }: Sig
 
     try {
       const response = await signup({ name, email, password });
-      onSignupSuccess(response.sessionToken);
+      onSignupSuccess(response.token);
     } catch (err: any) {
       setError(err.message || 'Erro ao criar conta. Tente novamente.');
       console.error('Erro de signup:', err);
