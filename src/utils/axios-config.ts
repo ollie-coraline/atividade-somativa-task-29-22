@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
 import { getSessionToken } from './storage';
 
-const baseURL = (globalThis as any).process?.env?.EXPO_PUBLIC_API_URL;
+const baseURL = process.env.EXPO_PUBLIC_API_URL;
 
 /**
  * Cria uma instância de Axios com configurações de autenticação
@@ -37,7 +37,7 @@ export const createApiClient = (): AxiosInstance => {
   client.interceptors.response.use(
     (response) => response,
     async (error) => {
-      if (error.response?.status === 401) {
+      if (error.response?.status === 401 || error.response?.status === 403) {
         // Token inválido ou expirado
         console.warn('Sessão expirada. Fazendo logout...');
         try {
@@ -51,6 +51,7 @@ export const createApiClient = (): AxiosInstance => {
       return Promise.reject(error);
     }
   );
+
 
   return client;
 };
