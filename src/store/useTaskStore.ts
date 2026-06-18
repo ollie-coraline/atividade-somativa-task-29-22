@@ -55,8 +55,15 @@ export const useTaskStore = create<TaskState>()(
         fetchTasks: async () => {
           set({ loading: true });
           try {
-            const res = await apiClient.get<Task[]>('/');
-            const data = res.data.map((t) => ({ ...t, completed: !!t.completed }));
+            const res = await apiClient.get<any>('/');
+            // Aceita diferentes formatos de resposta do backend:
+            // - Array direto: [ {..}, ... ]
+            // - Objeto com chave `tasks`: { tasks: [ ... ] }
+            // - Objeto com chave `data`: { data: [ ... ] }
+            const raw = Array.isArray(res.data)
+              ? res.data
+              : res.data?.tasks ?? res.data?.data ?? [];
+            const data = raw.map((t: any) => ({ ...t, completed: !!t.completed }));
             set({ tasks: data });
           } catch (err) {
             console.error('Erro ao buscar tasks:', err);
