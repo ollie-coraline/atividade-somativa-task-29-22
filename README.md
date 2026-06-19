@@ -43,13 +43,19 @@ Você vai precisar do **Node.js** instalado na sua máquina. Para testar o aplic
    npm install
    ```
 
-4. Inicie o servidor local do Expo:
+4. Crie uma .env na root do projeto escrito:
+
+   ```bash
+   EXPO_PUBLIC_API_URL=http://localhost:5555
+   ```
+
+5. Inicie o servidor local do Expo:
 
    ```bash
    npx expo start
    ```
 
-5. **Rodando o aplicativo:**
+6. **Rodando o aplicativo:**
    - **No celular:** Abra o app **Expo Go** e escaneie o código QR gerado no terminal.
    - **No emulador:** Pressione `a` no terminal para abrir no Android Emulator, ou `i` para o iOS Simulator (apenas macOS).
 
